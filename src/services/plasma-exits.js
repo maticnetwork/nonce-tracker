@@ -68,7 +68,6 @@ export const getAndSavePlasmaExits = async () => {
                     exitTxHash: exitCompletedTxHash,
                 }
                 datatoInsert.push(data);
-                console.log(`Plasma exit saved for ${counter}`)
             }
             await PlasmaExits.insertMany(datatoInsert)
         }
@@ -125,7 +124,6 @@ export const updatePlasmaExits = async () => {
             }
 
             await bulk.execute()
-            console.log("Executing bulk plasma update")
         }
         
     } catch (error) {

@@ -80,7 +80,6 @@ export const getAndSavePosDepositTransactions = async() => {
           }
           datatoInsert.push(data)
         }
-        console.log('Deposit counter', counter)
       }
 
       await RootDeposits.insertMany(datatoInsert)
@@ -185,7 +184,6 @@ export const getAndSaveDepositEtherTransaction = async () => {
     const mainnetWeb3 = new Web3(process.env.ETH_NETWORK_PROVIDER)
     let start = await RootDepositEther.countDocuments()
     let findMore = true
-    console.log(start)
 
     while (findMore) {
       let deposits = await getDepositsEthersFromSubgraph(start)
@@ -213,7 +211,6 @@ export const getAndSaveDepositEtherTransaction = async () => {
           isResolved: false,
         }
         datatoInsert.push(data)
-        console.log('Deposit counter', counter)
       }
 
       await RootDepositEther.insertMany(datatoInsert)

@@ -97,21 +97,18 @@ const initialise = async() => {
 
   try {
     await getAndSavePosExitTransactions()
-    console.log("Syncing of Exits done")
   } catch (error) {
     console.log("error in syncing root exits")
   }
 
   try {
     await getAndSavePosDepositTransactions()
-    console.log("Syncing of Deposits done")
   } catch (error) {
     console.log("error in syncing root deposits")
   }
 
   try {
     await updatePlasmaExits()
-    console.log("Updating plasma exits done.")
   } catch (error) {
     console.log("error in updating plasma exits")
   }
