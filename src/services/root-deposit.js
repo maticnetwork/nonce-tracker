@@ -11,12 +11,14 @@ const { getParsedTxDataFromAbiDecoder } = require('./decoder')
 export const getAndSavePosDepositTransactions = async() => {
   try {
     const mainnetWeb3 = new Web3(process.env.ETH_NETWORK_PROVIDER)
+    mainnetWeb3.eth.defaultBlock = 'safe'
     let start = await RootDeposits.countDocuments()
     let findMore = true
     // console.log(start)
 
     while (findMore) {
-      let deposits = await getDepositsFromSubgraph(start)
+      const safeBlock = await mainnetWeb3.eth.getBlock('safe')
+      let deposits = await getDepositsFromSubgraph(start, safeBlock.timestamp)
       if (deposits.length === 1000) {
         start = start + 1000
       } else {
@@ -90,13 +92,13 @@ export const getAndSavePosDepositTransactions = async() => {
   }
 }
 
-export const getDepositsFromSubgraph = async(start) => {
+export const getDepositsFromSubgraph = async(start, timestamp) => {
   try {
     const limit = 1000
     const direction = 'asc'
     const sortBy = 'counter'
     const query = gql`query{
-        rootDeposits(first:${limit}, where:{ counter_gt: ${start}}, orderDirection:${direction}, orderBy:${sortBy}) {
+        rootDeposits(first:${limit}, where:{ counter_gt: ${start}, timestamp_lte: ${timestamp}}, orderDirection:${direction}, orderBy:${sortBy}) {
             transactionHash,
             user,
             rootToken,
@@ -111,13 +113,13 @@ export const getDepositsFromSubgraph = async(start) => {
   }
 }
 
-export const getDepositsEthersFromSubgraph = async(start) => {
+export const getDepositsEthersFromSubgraph = async(start, timestamp) => {
   try {
     const limit = 1000
     const direction = 'asc'
     const sortBy = 'counter'
     const query = gql`query{
-      rootDepositEthers(first:${limit}, where:{ counter_gt: ${start}}, orderDirection:${direction}, orderBy:${sortBy}) {
+      rootDepositEthers(first:${limit}, where:{ counter_gt: ${start}, timestamp_lte: ${timestamp}}, orderDirection:${direction}, orderBy:${sortBy}) {
             transactionHash,
             user,
             value,
@@ -183,12 +185,14 @@ export const checkDepositTransactionIfReplaced = async(reqParams) => {
 export const getAndSaveDepositEtherTransaction = async () => {
   try {
     const mainnetWeb3 = new Web3(process.env.ETH_NETWORK_PROVIDER)
+    mainnetWeb3.eth.defaultBlock = 'safe'
     let start = await RootDepositEther.countDocuments()
     let findMore = true
     console.log(start)
 
     while (findMore) {
-      let deposits = await getDepositsEthersFromSubgraph(start)
+      const safeBlock = await mainnetWeb3.eth.getBlock('safe')
+      let deposits = await getDepositsEthersFromSubgraph(start, safeBlock.timestamp)
       if (deposits.length === 1000) {
         start = start + 1000
       } else {

@@ -14,7 +14,8 @@ export const getAndSavePosExitTransactions = async() => {
     let findMore = true
 
     while (findMore) {
-      let exits = await getExitsFromSubgraph(start)
+      const safeBlock = await mainnetWeb3.eth.getBlock('safe')
+      let exits = await getExitsFromSubgraph(start, safeBlock.timestamp)
       if (exits.length === 1000) {
         start = start + 1000
       } else {
@@ -46,13 +47,13 @@ export const getAndSavePosExitTransactions = async() => {
   }
 }
 
-export const getExitsFromSubgraph = async(start) => {
+export const getExitsFromSubgraph = async(start, timestamp) => {
   try {
     const limit = 1000
     const direction = 'asc'
     const sortBy = 'counter'
     const query = gql`query{
-        rootexits(first:${limit}, where:{ counter_gt: ${start}}, orderDirection:${direction}, orderBy:${sortBy}) {
+        rootexits(first:${limit}, where:{ counter_gt: ${start}, timestamp_lte: ${timestamp}}, orderDirection:${direction}, orderBy:${sortBy}) {
             transactionHash,
             counter,
             timestamp,

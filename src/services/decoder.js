@@ -9,6 +9,7 @@ export const mapWithdrawTxToBurnTx = async(transactionHash, isPos, tokenType=nul
     try {
     //   const { transactionHash } = event
         const web3 = new Web3(process.env.ETH_NETWORK_PROVIDER)
+        web3.eth.defaultBlock = 'safe'
         const maticWeb3= new Web3(process.env.MATIC_NETWORK_PROVIDER)
         let abi
         if (isPos) {

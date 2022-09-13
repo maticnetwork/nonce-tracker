@@ -2,14 +2,22 @@ require('dotenv').config()
 const PlasmaExits = require('../models/PlasmaExits')
 const { request, gql } = require('graphql-request')
 const { mapWithdrawTxToBurnTx } = require('./decoder')
+const Web3 = require('web3')
+const web3 = new Web3(process.env.ETH_NETWORK_PROVIDER)
+web3.eth.defaultBlock = 'safe'
 
-const getPlasmaExitsFromSubgraph = async (start) => {
+
+const getPlasmaExitsFromSubgraph = async (start, timestamp = null) => {
     try {
         const limit = 1000
         const direction = 'asc'
         const sortBy = 'counter'
+        let condition = ''
+        if (timestamp) {
+            condition = `, exitStartedTimeStamp_lte: ${timestamp}`
+        }
         const query = gql`query{
-        plasmaExits(first:${limit}, where:{ exitStartedTxHash_not: null, counter_gt: ${start}}, orderDirection:${direction}, orderBy:${sortBy}) {
+        plasmaExits(first:${limit}, where:{ exitStartedTxHash_not: null, counter_gt: ${start} ${condition} }, orderDirection:${direction}, orderBy:${sortBy}) {
                 counter,
                 exitStartedTxHash,
                 exitCompletedTxHash,
@@ -40,7 +48,8 @@ export const getAndSavePlasmaExits = async () => {
         let start = await PlasmaExits.countDocuments()
         let findMore = true
         while (findMore) {
-            let plasmaExits = await getPlasmaExitsFromSubgraph(start)
+            const safeBlock = await web3.eth.getBlock('safe')
+            let plasmaExits = await getPlasmaExitsFromSubgraph(start, safeBlock.timestamp)
             if (plasmaExits.length === 1000) {
                 start = start + 1000
             } else {
