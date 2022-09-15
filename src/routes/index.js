@@ -6,6 +6,6 @@ const plasmaExitRoutes = require('./plasma-exits')
 const router = express.Router()
 router.use('/exit', posExitRoutes)
 router.use('/deposit', posDepositRoutes)
-router.use('/plasma-exit', plasmaExitRoutes);
+router.use('/plasma-exit', plasmaExitRoutes)
 
 module.exports = router

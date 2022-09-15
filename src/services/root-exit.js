@@ -3,7 +3,6 @@ const PlasmaExits = require('../models/PlasmaExits')
 const { request, gql } = require('graphql-request')
 const { mainnetWeb3 } = require('../index')
 require('dotenv').config()
-const Web3 = require('web3')
 const { mapWithdrawTxToBurnTx } = require('./decoder')
 
 // Save Exit Transaction from Subgraph with nonces
@@ -14,7 +13,8 @@ export const getAndSavePosExitTransactions = async() => {
     let findMore = true
 
     while (findMore) {
-      let exits = await getExitsFromSubgraph(start)
+      const safeBlock = await mainnetWeb3.eth.getBlock('safe')
+      let exits = await getExitsFromSubgraph(start, safeBlock.timestamp)
       if (exits.length === 1000) {
         start = start + 1000
       } else {
@@ -28,12 +28,12 @@ export const getAndSavePosExitTransactions = async() => {
           counter
         } = exit
         const burnTransactionResult = await mapWithdrawTxToBurnTx(transactionHash, true, null, true)
-        if (!burnTransactionResult) throw new Error("error in getting burntransaction")
+        if (!burnTransactionResult) throw new Error('error in getting burntransaction')
         const burnTransactionHash = burnTransactionResult.result.toLowerCase()
         const data = {
           transactionHash,
           burnTransactionHash,
-          timestamp,
+          timestamp
         }
         datatoInsert.push(data)
         console.log('Exit counter', counter)
@@ -46,13 +46,13 @@ export const getAndSavePosExitTransactions = async() => {
   }
 }
 
-export const getExitsFromSubgraph = async(start) => {
+export const getExitsFromSubgraph = async(start, timestamp) => {
   try {
     const limit = 1000
     const direction = 'asc'
     const sortBy = 'counter'
     const query = gql`query{
-        rootexits(first:${limit}, where:{ counter_gt: ${start}}, orderDirection:${direction}, orderBy:${sortBy}) {
+        rootexits(first:${limit}, where:{ counter_gt: ${start}, timestamp_lte: ${timestamp}}, orderDirection:${direction}, orderBy:${sortBy}) {
             transactionHash,
             counter,
             timestamp,
@@ -68,18 +68,17 @@ export const getExitsFromSubgraph = async(start) => {
 export const checkExitTransactionIfReplaced = async(reqParams) => {
   try {
     let { burnTransactionHash, isPos } = reqParams.query
-    console.log(isPos, typeof(isPos))
+    console.log(isPos, typeof (isPos))
     burnTransactionHash = burnTransactionHash.toLowerCase()
     let rootExit
     if (isPos === 'true') {
-      console.log("pos")
+      console.log('pos')
       rootExit = await RootExits.findOne({ burnTransactionHash })
     } else {
-      console.log("plasma")
+      console.log('plasma')
       rootExit = await PlasmaExits.findOne({ burnTransactionHash })
     }
     let response
-    let plasmaResponse
     if (rootExit) {
       let transactionHash
       if (isPos === 'true') {
