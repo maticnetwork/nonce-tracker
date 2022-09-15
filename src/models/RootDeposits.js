@@ -23,24 +23,24 @@ const RootDepositSchema = mongoose.Schema({
   },
   isResolved: {
     type: Boolean,
-    default: false,
+    default: false
   },
   resolveTransaction: {
     type: String,
-    required: false,
+    required: false
   },
   blockNumber: {
     type: Number,
-    required: false,
+    required: false
   },
   timestamp: {
     type: Number,
-    required: false,
+    required: false
   },
   isDecoded: {
     type: Boolean,
     required: false
-  },
+  }
 })
 
 module.exports = mongoose.model('RootDeposits', RootDepositSchema)

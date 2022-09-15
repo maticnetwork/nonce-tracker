@@ -19,6 +19,7 @@ const { getAndSavePosExitTransactions } = require('./services/root-exit')
 const { getAndSavePlasmaExits, updatePlasmaExits } = require('./services/plasma-exits')
 
 export const mainnetWeb3 = new Web3(process.env.NETWORK_PROVIDER)
+mainnetWeb3.eth.defaultBlock = 'safe'
 
 const mongoose = require('mongoose')
 
