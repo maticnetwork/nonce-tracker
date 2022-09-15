@@ -19,16 +19,16 @@ const RootDepositEtherSchema = mongoose.Schema({
   },
   isResolved: {
     type: Boolean,
-    default: false,
+    default: false
   },
   resolveTransaction: {
     type: String,
-    required: false,
+    required: false
   },
   timestamp: {
     type: Number,
-    required: false,
-  },
+    required: false
+  }
 })
 
 module.exports = mongoose.model('RootDepositsEther', RootDepositEtherSchema)

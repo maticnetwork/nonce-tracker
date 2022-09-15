@@ -7,19 +7,19 @@ const PlasmaExitsSchema = mongoose.Schema({
   },
   burnTransactionHash: {
     type: String,
-    required: true,
+    required: true
   },
   exitableAt: {
-      type: Number,
-      required: true,
+    type: Number,
+    required: true
   },
   counter: {
-      type: Number,
-      required: true,
+    type: Number,
+    required: true
   },
   exitTxHash: {
     type: String,
-    required: false,
+    required: false
   }
 })
 
