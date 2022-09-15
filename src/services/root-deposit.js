@@ -82,7 +82,6 @@ export const getAndSavePosDepositTransactions = async() => {
           }
           datatoInsert.push(data)
         }
-        console.log('Deposit counter', counter)
       }
 
       await RootDeposits.insertMany(datatoInsert)
@@ -187,7 +186,6 @@ export const getAndSaveDepositEtherTransaction = async() => {
     mainnetWeb3.eth.defaultBlock = 'safe'
     let start = await RootDepositEther.countDocuments()
     let findMore = true
-    console.log(start)
 
     while (findMore) {
       const safeBlock = await mainnetWeb3.eth.getBlock('safe')
@@ -216,7 +214,6 @@ export const getAndSaveDepositEtherTransaction = async() => {
           isResolved: false
         }
         datatoInsert.push(data)
-        console.log('Deposit counter', counter)
       }
 
       await RootDepositEther.insertMany(datatoInsert)

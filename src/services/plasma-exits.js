@@ -124,7 +124,6 @@ export const updatePlasmaExits = async() => {
       }
 
       const bulk = PlasmaExits.collection.initializeUnorderedBulkOp()
-
       for (const plasmaExit of plasmaExits) {
         let { counter } = plasmaExit
         const { exitCompletedTxHash } = plasmaExit

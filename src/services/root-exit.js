@@ -36,7 +36,6 @@ export const getAndSavePosExitTransactions = async() => {
           timestamp
         }
         datatoInsert.push(data)
-        console.log('Exit counter', counter)
       }
 
       await RootExits.insertMany(datatoInsert)
@@ -68,14 +67,11 @@ export const getExitsFromSubgraph = async(start, timestamp) => {
 export const checkExitTransactionIfReplaced = async(reqParams) => {
   try {
     let { burnTransactionHash, isPos } = reqParams.query
-    console.log(isPos, typeof (isPos))
     burnTransactionHash = burnTransactionHash.toLowerCase()
     let rootExit
     if (isPos === 'true') {
-      console.log('pos')
       rootExit = await RootExits.findOne({ burnTransactionHash })
     } else {
-      console.log('plasma')
       rootExit = await PlasmaExits.findOne({ burnTransactionHash })
     }
     let response
